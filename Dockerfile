@@ -1,3 +1,4 @@
+FROM gcr.io/kaniko-project/executor:latest as kaniko
 FROM alpine:3.11
 
 # https://aur.archlinux.org/packages/kubectl-bin/
@@ -11,7 +12,16 @@ ENV HELM_S3_PLUGIN_VERSION "0.9.2"
 
 RUN apk --no-cache upgrade \
   && apk add --update bash ca-certificates git python \
-  && apk add --update -t deps curl make py-pip openssl 
+  && apk add --update -t deps curl make py-pip openssl  \
+  && apk add docker openrc \
+  && rc-update add docker boot 
+#   && docker version
+# copy kaniko tools
+COPY --from=kaniko /kaniko /kaniko
+RUN chmod +x /kaniko
+
+ENV PATH=/kaniko:$PATH
+ENV DOCKER_CONFIG='/kaniko/.docker'
 
 #install kubectl
 # https://aur.archlinux.org/packages/kubectl-bin/
@@ -41,7 +51,7 @@ RUN curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/
 
 # awscli
 RUN pip install awscli 
-RUN aws --version
+
 # install YAML tools
 RUN pip install yamllint yq
 
