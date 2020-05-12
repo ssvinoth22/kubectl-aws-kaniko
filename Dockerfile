@@ -52,6 +52,10 @@ RUN curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/
 # awscli
 RUN pip install awscli 
 
+#ecscli
+RUN curl -o /usr/local/bin/ecs-cli https://amazon-ecs-cli.s3.amazonaws.com/ecs-cli-linux-amd64-latest \
+    &&  chmod +x /usr/local/bin/ecs-cli
+
 # install YAML tools
 RUN pip install yamllint yq
 
