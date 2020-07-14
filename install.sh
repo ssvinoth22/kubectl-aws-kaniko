@@ -2,7 +2,7 @@
 set -e
 
 # update kube config
-# aws configure set default.region ${CLUSTER_REGION}
+aws configure set default.region ${CLUSTER_REGION}
 if [ -n "${EKS_CLUSTER_NAME}" ];then
     aws eks --region ${CLUSTER_REGION} update-kubeconfig --name ${EKS_CLUSTER_NAME}
 fi
