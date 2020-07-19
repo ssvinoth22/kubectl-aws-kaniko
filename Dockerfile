@@ -1,11 +1,12 @@
 FROM gcr.io/kaniko-project/executor:latest as kaniko
 FROM alpine:3.11
 
+#ARG CLUSTER_REGION
 # https://aur.archlinux.org/packages/kubectl-bin/
 ENV KUBECTL_VERSION "1.17.4"
 
 # set some defaults
-ENV AWS_DEFAULT_REGION "us-west-2"
+ENV AWS_DEFAULT_REGION $CLUSTER_REGION
 
 # https://github.com/hypnoglow/helm-s3
 ENV HELM_S3_PLUGIN_VERSION "0.9.2"
@@ -42,8 +43,8 @@ RUN curl -L https://storage.googleapis.com/skaffold/releases/latest/skaffold-lin
 
 # aws-iam-authenticator
 # https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html
-RUN curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.15.10/2020-02-22/bin/linux/amd64/aws-iam-authenticator \
-    && curl -o aws-iam-authenticator.sha256 https://amazon-eks.s3-us-west-2.amazonaws.com/1.15.10/2020-02-22/bin/linux/amd64/aws-iam-authenticator.sha256 \
+RUN curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.17.7/2020-07-08/bin/linux/amd64/aws-iam-authenticator \
+    && curl -o aws-iam-authenticator.sha256 https://amazon-eks.s3.us-west-2.amazonaws.com/1.17.7/2020-07-08/bin/linux/amd64/aws-iam-authenticator.sha256 \
     &&  openssl sha1 -sha256 aws-iam-authenticator \
     &&  chmod +x ./aws-iam-authenticator \
     &&  mv aws-iam-authenticator /usr/local/bin/aws-iam-authenticator \
@@ -65,6 +66,7 @@ RUN apk del --purge deps \
 && rm -rf /tmp/*
 
 COPY install.sh /opt/install.sh
+COPY config.json /kaniko/.docker/config.json
 #RUN /opt/install.sh
 
 
